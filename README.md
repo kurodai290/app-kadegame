@@ -1,92 +1,39 @@
-# CYBER TCG v2
+# CYBER TCG Firebase版
 
-今回の修正版は「ルームコード」「対戦開始」「観戦」「チャット」を分かりやすくしました。
+Firebaseの接続設定を入れたGitHub Pages用のCYBER TCGです。
 
-## まず重要
+## Firebase側で完了している設定
 
-GitHub Pagesだけでは、別のスマホ・PC同士のリアルタイム対戦はできません。
-このゲームではFirebase Realtime Databaseを使います。
+- Firebaseプロジェクト: cyber-tcg
+- Webアプリ: CYBER TCG Web
+- Realtime Database
+- Authentication → 匿名ログイン
 
-## ファイル
+## GitHubへの入れ方
+
+このZIPの中にある
 
 - index.html
 - game.html
-- README.md
 
-## Firebase設定
+をGitHubリポジトリにアップロードしてください。
 
-index.html と game.html の両方にある `firebaseConfig` を、自分のFirebaseプロジェクトの設定に置き換えます。
-
-Firebase Consoleで、
-
-1. プロジェクトを作成
-2. Webアプリを追加
-3. 表示されたfirebaseConfigをコピー
-4. Authentication → Sign-in method → Anonymous を有効化
-5. Realtime Databaseを作成
-6. index.html と game.html の `firebaseConfig` に貼り付け
-
-を行ってください。
+古い `index.html` と `game.html` がある場合は、置き換えてください。
 
 ## 対戦方法
 
-### プレイヤーA
+1. プレイヤー1が「ルームを作る」
+2. 6文字のルームコードが表示される
+3. プレイヤー2が同じコードを入力して「対戦に参加する」
+4. 2人そろうと自動で対戦開始
+5. 3人目以降は同じコードで「観戦する」
 
-「ルームを作る」を押します。
+## 注意
 
-すると、
+現在のRealtime Databaseルールはテスト用です。
+ゲームが正常に動くことを確認した後、公開運用する場合は安全なルールへ変更してください。
 
-ROOM CODE: ABC123
+## 重要
 
-のような6文字のコードが表示されます。
-
-このコードをプレイヤーBへ伝えます。
-
-### プレイヤーB
-
-自分の名前を入力して、同じコードを入力します。
-
-「対戦に参加する」を押します。
-
-2人目が入った瞬間に対戦開始です。
-
-### 観戦者
-
-3人目以降は同じコードを入力して「観戦する」を押します。
-
-観戦者は、
-
-- 両プレイヤーのHP
-- Energy
-- スコア
-- 場に出ているカード
-- バトルログ
-- チャット
-
-を見られます。
-
-観戦者はカードを出したり攻撃したりできません。
-
-## チャット
-
-画面下の「チャット」に文章を入力して「送信」を押します。
-Enterキーでも送信できます。
-
-チャットはFirebaseに保存されるため、同じルームにいる人全員に表示されます。
-
-## カード
-
-現在は5種類です。
-
-打打だいず：ATK4、攻撃時追加1ダメージ
-Laur：ATK3、攻撃時に自分のHPを1回復
-TJ.hangneil：ATK6、攻撃時追加2ダメージ
-sasakure.UK：ATK2、次の攻撃を強化
-t+pazolite：ATK5、相手のEnergyを1減らす
-
-## GitHub Pages
-
-この3ファイルをGitHubリポジトリのルートにアップロードしてGitHub Pagesを有効にしてください。
-
-注意：
-`YOUR_API_KEY` などを残したままではFirebaseに接続できません。
+FirebaseのWeb設定にはAPIキー等が含まれますが、Webアプリ用設定のAPIキーは通常のパスワードとは異なります。
+ただし、Firebaseのサービスアカウント秘密鍵や秘密鍵ファイルは公開しないでください。

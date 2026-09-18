@@ -43,73 +43,108 @@ import {getDatabase,ref,set,get} from "https://www.gstatic.com/firebasejs/10.14.
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 const firebaseConfig={
-  apiKey:"YOUR_API_KEY",
-  authDomain:"YOUR_PROJECT.firebaseapp.com",
-  databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId:"YOUR_PROJECT",
-  storageBucket:"YOUR_PROJECT.appspot.com",
-  messagingSenderId:"YOUR_SENDER_ID",
-  appId:"YOUR_APP_ID"
+  apiKey:"AIzaSyBq7nW2BDqEUvu4bKgtPtbUWvZo7tjDjLE",
+  authDomain:"cyber-tcg-3cff0.firebaseapp.com",
+  databaseURL:"https://cyber-tcg-3cff0-default-rtdb.firebaseio.com",
+  projectId:"cyber-tcg-3cff0",
+  storageBucket:"cyber-tcg-3cff0.firebasestorage.app",
+  messagingSenderId:"448402306467",
+  appId:"1:448402306467:web:0ed15e5d0f0730e4ee5616"
 };
 
 const app=initializeApp(firebaseConfig);
 const db=getDatabase(app);
 const auth=getAuth(app);
 
-try{await signInAnonymously(auth)}catch(e){
- alert("Firebaseへの接続に失敗しました。READMEのFirebase設定を確認してください。");
- console.error(e);
+try{
+  await signInAnonymously(auth);
+}catch(e){
+  alert("Firebaseへの接続に失敗しました。Authenticationの「匿名」が有効か確認してください。");
+  console.error(e);
 }
 
 const $=id=>document.getElementById(id);
 const makeCode=()=>Math.random().toString(36).substring(2,8).toUpperCase();
 
 $("create").onclick=async()=>{
- const name=$("name").value.trim();
- if(!name)return alert("プレイヤー名を入力してください");
- let code="",exists=true;
- for(let i=0;i<10&&exists;i++){code=makeCode();exists=(await get(ref(db,"rooms/"+code))).exists()}
- if(exists)return alert("ルームコードを作れませんでした。もう一度試してください");
+  try{
+    const name=$("name").value.trim();
+    if(!name)return alert("プレイヤー名を入力してください");
 
- await set(ref(db,"rooms/"+code),{
-   createdAt:Date.now(),
-   status:"waiting",
-   turn:"p1",
-   winner:null,
-   players:{
-     p1:{name,hp:20,energy:3,score:0,card:null},
-     p2:null
-   },
-   cards:{
-     p1:["c1","c2","c3","c4","c5"],
-     p2:["c1","c2","c3","c4","c5"]
-   },
-   log:[`${name}さんがルームを作成しました。相手の参加を待っています。`]
- });
- alert(`ルームを作成しました！\n\nルームコード：${code}\n\nこのコードを対戦相手に伝えてください。`);
- location.href=`game.html?room=${code}&name=${encodeURIComponent(name)}&mode=player`;
+    let code="",exists=true;
+    for(let i=0;i<10&&exists;i++){
+      code=makeCode();
+      exists=(await get(ref(db,"rooms/"+code))).exists();
+    }
+    if(exists)return alert("ルームコードを作れませんでした。もう一度試してください");
+
+    await set(ref(db,"rooms/"+code),{
+      createdAt:Date.now(),
+      status:"waiting",
+      turn:"p1",
+      winner:null,
+      players:{
+        p1:{name,hp:20,energy:3,score:0,card:null,nextBonus:0},
+        p2:null
+      },
+      cards:{
+        p1:["c1","c2","c3","c4","c5"],
+        p2:["c1","c2","c3","c4","c5"]
+      },
+      log:[`${name}さんがルームを作成しました。相手の参加を待っています。`]
+    });
+
+    alert(`ルームを作成しました！\n\nルームコード：${code}\n\nこのコードを対戦相手に伝えてください。`);
+    location.href=`game.html?room=${code}&name=${encodeURIComponent(name)}&mode=player`;
+  }catch(e){
+    console.error(e);
+    alert("ルーム作成に失敗しました。FirebaseのRealtime Databaseルールを確認してください。");
+  }
 };
 
 $("join").onclick=async()=>{
- const name=$("name").value.trim(),code=$("room").value.trim().toUpperCase();
- if(!name)return alert("プレイヤー名を入力してください");
- if(!code)return alert("ルームコードを入力してください");
- const snap=await get(ref(db,"rooms/"+code));
- if(!snap.exists())return alert("そのルームは見つかりません。コードを確認してください。");
- const room=snap.val();
- if(room.players?.p2)return alert("このルームはすでに2人参加しています。観戦してください。");
- await set(ref(db,"rooms/"+code+"/players/p2"),{name,hp:20,energy:3,score:0,card:null});
- await set(ref(db,"rooms/"+code+"/status"),"battle");
- await set(ref(db,"rooms/"+code+"/log"),[...(room.log||[]),`${name}さんが参加しました。対戦開始！`]);
- location.href=`game.html?room=${code}&name=${encodeURIComponent(name)}&mode=player`;
+  try{
+    const name=$("name").value.trim();
+    const code=$("room").value.trim().toUpperCase();
+    if(!name)return alert("プレイヤー名を入力してください");
+    if(!code)return alert("ルームコードを入力してください");
+
+    const snap=await get(ref(db,"rooms/"+code));
+    if(!snap.exists())return alert("そのルームは見つかりません。コードを確認してください。");
+
+    const room=snap.val();
+    if(room.players?.p2)return alert("このルームはすでに2人参加しています。観戦してください。");
+
+    await set(ref(db,"rooms/"+code+"/players/p2"),{
+      name,hp:20,energy:3,score:0,card:null,nextBonus:0
+    });
+    await set(ref(db,"rooms/"+code+"/status"),"battle");
+    await set(ref(db,"rooms/"+code+"/log"),[
+      ...(room.log||[]),
+      `${name}さんが参加しました。対戦開始！`
+    ]);
+
+    location.href=`game.html?room=${code}&name=${encodeURIComponent(name)}&mode=player`;
+  }catch(e){
+    console.error(e);
+    alert("参加に失敗しました。FirebaseのRealtime Databaseルールを確認してください。");
+  }
 };
 
 $("watch").onclick=async()=>{
- const code=$("room").value.trim().toUpperCase(),name=$("name").value.trim()||"観戦者";
- if(!code)return alert("観戦したいルームコードを入力してください");
- const snap=await get(ref(db,"rooms/"+code));
- if(!snap.exists())return alert("そのルームは見つかりません。");
- location.href=`game.html?room=${code}&name=${encodeURIComponent(name)}&mode=spectator`;
+  try{
+    const code=$("room").value.trim().toUpperCase();
+    const name=$("name").value.trim()||"観戦者";
+    if(!code)return alert("観戦したいルームコードを入力してください");
+
+    const snap=await get(ref(db,"rooms/"+code));
+    if(!snap.exists())return alert("そのルームは見つかりません。");
+
+    location.href=`game.html?room=${code}&name=${encodeURIComponent(name)}&mode=spectator`;
+  }catch(e){
+    console.error(e);
+    alert("ルームの確認に失敗しました。");
+  }
 };
 </script>
 </body>

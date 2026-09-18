@@ -9,7 +9,7 @@
 header{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.title{font-size:25px;color:#00f3ff;text-shadow:0 0 10px #00f3ff}.code{font-size:15px;color:#ff007f;font-weight:bold}
 .status{margin:12px 0;padding:13px;border:1px solid #313860;border-radius:10px;background:#121225;text-align:center}.status.ready{border-color:#39ff14;color:#39ff14}.status.wait{border-color:#ff007f;color:#ff7fba}
 .players{display:grid;grid-template-columns:1fr 1fr;gap:12px}.player{background:#121225;border:1px solid #2c335b;border-radius:10px;padding:12px}.pname{font-weight:bold}.hpbar{height:8px;background:#28283a;border-radius:5px;overflow:hidden;margin:6px 0}.hp{height:100%;background:#39ff14;transition:.3s}
-.field,.hand,.chat{background:#121225;border:1px solid #2c335b;border-radius:12px;margin-top:14px;padding:15px}.label{font-size:12px;color:#9090b5;margin-bottom:10px}.cards{display:flex;gap:12px;flex-wrap:wrap}.card{width:165px;min-height:205px;background:linear-gradient(145deg,#1a1c3b,#0c0d18);border:2px solid #30365e;border-radius:11px;padding:11px;position:relative}.hand .card{cursor:pointer}.hand .card:hover{border-color:#00f3ff;transform:translateY(-3px)}.card h3{font-size:15px;margin:0 0 8px}.type{font-size:10px;color:#ff007f}.effect{font-size:11px;color:#aaaacd;line-height:1.5;margin:12px 0}.stat{font-size:12px}.back{position:absolute;right:10px;top:10px;background:transparent;color:#00f3ff;border:1px solid #00f3ff;border-radius:6px;padding:7px;cursor:pointer}
+.field,.hand,.chat{background:#121225;border:1px solid #2c335b;border-radius:12px;margin-top:14px;padding:15px}.label{font-size:12px;color:#9090b5;margin-bottom:10px}.cards{display:flex;gap:12px;flex-wrap:wrap}.card{width:165px;min-height:205px;background:linear-gradient(145deg,#1a1c3b,#0c0d18);border:2px solid #30365e;border-radius:11px;padding:11px;position:relative}.hand .card{cursor:pointer}.hand .card:hover{border-color:#00f3ff;transform:translateY(-3px)}.card h3{font-size:15px;margin:0 0 8px}.type{font-size:10px;color:#ff007f}.effect{font-size:11px;color:#aaaacd;line-height:1.5;margin:12px 0}.stat{font-size:12px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button,.chat button{padding:10px 15px;background:transparent;color:#00f3ff;border:1px solid #00f3ff;border-radius:7px;cursor:pointer;font-weight:bold}.actions button:disabled{opacity:.35;cursor:not-allowed}.messages{height:150px;overflow:auto;background:#090914;border-radius:8px;padding:9px;font-size:12px;line-height:1.7}.chatrow{display:flex;gap:8px;margin-top:8px}.chatrow input{flex:1;min-width:0;padding:10px;background:#080812;border:1px solid #33385f;border-radius:7px;color:#fff}.notice{color:#9090b5;font-size:12px;line-height:1.6}
 @media(max-width:700px){.players{grid-template-columns:1fr}.card{width:145px}}
 </style>
@@ -42,17 +42,28 @@ import {getDatabase,ref,onValue,update,push,get} from "https://www.gstatic.com/f
 import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 const firebaseConfig={
- apiKey:"YOUR_API_KEY",authDomain:"YOUR_PROJECT.firebaseapp.com",
- databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com",
- projectId:"YOUR_PROJECT",storageBucket:"YOUR_PROJECT.appspot.com",
- messagingSenderId:"YOUR_SENDER_ID",appId:"YOUR_APP_ID"
+  apiKey:"AIzaSyBq7nW2BDqEUvu4bKgtPtbUWvZo7tjDjLE",
+  authDomain:"cyber-tcg-3cff0.firebaseapp.com",
+  databaseURL:"https://cyber-tcg-3cff0-default-rtdb.firebaseio.com",
+  projectId:"cyber-tcg-3cff0",
+  storageBucket:"cyber-tcg-3cff0.firebasestorage.app",
+  messagingSenderId:"448402306467",
+  appId:"1:448402306467:web:0ed15e5d0f0730e4ee5616"
 };
-const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app);
-try{await signInAnonymously(auth)}catch(e){console.error(e)}
+
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+const auth=getAuth(app);
+
+try{await signInAnonymously(auth)}
+catch(e){console.error(e);alert("Firebaseの匿名ログインに失敗しました。Authenticationを確認してください。")}
 
 const params=new URLSearchParams(location.search);
-const room=params.get("room"),name=params.get("name")||"名無し",mode=params.get("mode")||"player";
+const room=params.get("room");
+const name=params.get("name")||"名無し";
+const mode=params.get("mode")||"player";
 const roomRef=ref(db,"rooms/"+room);
+
 const cards=[
  {id:"c1",name:"打打だいず",cost:1,power:4,type:"通常",effect:"攻撃時、追加1ダメージ"},
  {id:"c2",name:"Laur",cost:1,power:3,type:"通常",effect:"攻撃時、自分のHPを1回復"},
@@ -60,28 +71,45 @@ const cards=[
  {id:"c4",name:"sasakure.UK",cost:1,power:2,type:"通常",effect:"攻撃時、次回攻撃に+2"},
  {id:"c5",name:"t+pazolite",cost:2,power:5,type:"特殊",effect:"攻撃時、相手Energyを1減らす"}
 ];
+
 let state=null,mySlot=null;
 const $=id=>document.getElementById(id);
-$("code").textContent="ROOM CODE: "+room;
+$("code").textContent="ROOM CODE: "+(room||"");
 
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function esc(s){
+ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))
+}
 function getCard(id){return cards.find(c=>c.id===id)}
 function addLog(log,msg){return [...(log||[]),new Date().toLocaleTimeString()+" "+msg].slice(-50)}
+
 function render(){
  if(!state)return;
- const p1=state.players?.p1,p2=state.players?.p2;
- mySlot=mode==="player"?(p1?.name===name?"p1":p2?.name===name?"p2":null):null;
- const mine=mySlot?state.players[mySlot]:null,opp=mySlot?state.players[mySlot==="p1"?"p2":"p1"]:p1;
+
+ const p1=state.players?.p1;
+ const p2=state.players?.p2;
+
+ mySlot=mode==="player"
+   ? (p1?.name===name?"p1":p2?.name===name?"p2":null)
+   : null;
+
+ const mine=mySlot?state.players[mySlot]:null;
+ const opp=mySlot?state.players[mySlot==="p1"?"p2":"p1"]:p1;
+
  if(!p2){
    $("status").className="status wait";
-   $("status").textContent=mode==="spectator"?"観戦待機：まだ2人目が参加していません":"ルーム作成済み：相手がルームコードを入力するのを待っています";
+   $("status").textContent=mode==="spectator"
+     ?"観戦待機：まだ2人目が参加していません"
+     :"ルーム作成済み：相手がルームコードを入力するのを待っています";
  }else if(state.winner){
    $("status").className="status ready";
    $("status").textContent="🏆 対戦終了！ 勝者："+state.winner;
  }else{
    $("status").className="status ready";
-   $("status").textContent=mode==="spectator"?"👁 観戦中： "+(state.turn==="p1"?p1.name:p2.name)+" のターン":state.turn===mySlot?"⚔ あなたのターン":"相手のターン";
+   $("status").textContent=mode==="spectator"
+     ?"👁 観戦中："+(state.turn==="p1"?p1.name:p2.name)+" のターン"
+     :state.turn===mySlot?"⚔ あなたのターン":"相手のターン";
  }
+
  for(const [s,p] of [["p1",p1],["p2",p2]]){
    $(s+"name").textContent=p?.name||"待機中";
    $(s+"hpText").textContent=p?.hp??0;
@@ -89,88 +117,209 @@ function render(){
    $(s+"energy").textContent=p?.energy??0;
    $(s+"score").textContent=p?.score??0;
  }
+
  renderField("myField",mine?.card,true);
  renderField("oppField",opp?.card,false);
 
- const hand=$("hand");hand.innerHTML="";
- if(mode==="spectator"){ $("handNotice").textContent="観戦者はカードを操作できません。"; }
- else if(!mySlot){$("handNotice").textContent="自分のプレイヤー枠が見つかりません。"; }
- else {$("handNotice").textContent="カードを出すと、そのカードの効果を使って攻撃できます。";}
+ const hand=$("hand");
+ hand.innerHTML="";
+
+ if(mode==="spectator"){
+   $("handNotice").textContent="観戦者はカードを操作できません。";
+ }else if(!mySlot){
+   $("handNotice").textContent="自分のプレイヤー枠が見つかりません。";
+ }else{
+   $("handNotice").textContent="カードを出すと、そのカードの効果を使って攻撃できます。";
+ }
+
  (state.cards?.[mySlot]||[]).forEach(id=>{
-   const c=getCard(id);if(!c)return;
-   const d=document.createElement("div");d.className="card";
+   const c=getCard(id);
+   if(!c)return;
+
+   const d=document.createElement("div");
+   d.className="card";
    d.innerHTML=`<h3>${c.name}</h3><div class="type">${c.type} / COST ${c.cost}</div><div class="effect">${c.effect}</div><div class="stat">ATK ${c.power}</div>`;
-   if(mode==="player"&&mySlot&&state.turn===mySlot&&!state.winner&&!mine.card&&mine.energy>=c.cost)d.onclick=()=>play(c);
-   else d.style.opacity=".55";
+
+   if(mode==="player"&&mySlot&&state.turn===mySlot&&!state.winner&&!mine.card&&mine.energy>=c.cost)
+     d.onclick=()=>play(c);
+   else
+     d.style.opacity=".55";
+
    hand.appendChild(d);
  });
- const acts=$("actions");acts.innerHTML="";
+
+ const acts=$("actions");
+ acts.innerHTML="";
+
  if(mode==="player"&&mySlot&&mine?.card&&state.turn===mySlot&&!state.winner){
-   const a=document.createElement("button");a.textContent="⚔ 攻撃する";a.onclick=attack;acts.appendChild(a);
-   const e=document.createElement("button");e.textContent="ターン終了";e.onclick=endTurn;acts.appendChild(e);
+   const a=document.createElement("button");
+   a.textContent="⚔ 攻撃する";
+   a.onclick=attack;
+   acts.appendChild(a);
+
+   const e=document.createElement("button");
+   e.textContent="ターン終了";
+   e.onclick=endTurn;
+   acts.appendChild(e);
  }
- const b=document.createElement("button");b.textContent="ロビーへ戻る";b.onclick=()=>location.href="index.html";acts.appendChild(b);
+
+ const b=document.createElement("button");
+ b.textContent="ロビーへ戻る";
+ b.onclick=()=>location.href="index.html";
+ acts.appendChild(b);
+
  $("log").innerHTML=(state.log||[]).map(x=>`<div>${esc(x)}</div>`).join("");
- const log=$("log");log.scrollTop=log.scrollHeight;
+ const log=$("log");
+ log.scrollTop=log.scrollHeight;
 }
+
 function renderField(id,card,own){
- const el=$(id);el.innerHTML="";
- if(!card){el.innerHTML='<span class="notice">カードなし</span>';return}
- const c=getCard(card);if(!c)return;
- const d=document.createElement("div");d.className="card";
+ const el=$(id);
+ el.innerHTML="";
+
+ if(!card){
+   el.innerHTML='<span class="notice">カードなし</span>';
+   return;
+ }
+
+ const c=getCard(card);
+ if(!c)return;
+
+ const d=document.createElement("div");
+ d.className="card";
  d.innerHTML=`<h3>${c.name}</h3><div class="type">${c.type}</div><div class="effect">${c.effect}</div><div class="stat">ATK ${c.power}</div>`;
+
  if(!own)d.style.filter="brightness(.65)";
  el.appendChild(d);
 }
+
 async function play(c){
  if(!mySlot||state.turn!==mySlot)return;
- const p=state.players[mySlot];if(p.card)return;if(p.energy<c.cost)return alert("Energyが足りません");
- const up={};up[`players/${mySlot}/card`]=c.id;up[`players/${mySlot}/energy`]=p.energy-c.cost;
+
+ const p=state.players[mySlot];
+ if(p.card)return;
+ if(p.energy<c.cost)return alert("Energyが足りません");
+
+ const up={};
+ up[`players/${mySlot}/card`]=c.id;
+ up[`players/${mySlot}/energy`]=p.energy-c.cost;
  up.log=addLog(state.log,`${p.name}が${c.name}を場に出しました`);
- await update(roomRef,up);
+
+ try{await update(roomRef,up)}
+ catch(e){console.error(e);alert("カードを出せませんでした。Firebaseのルールを確認してください。")}
 }
+
 async function attack(){
- const me=state.players[mySlot],os=mySlot==="p1"?"p2":"p1",op=state.players[os],c=getCard(me.card);
+ if(!mySlot)return;
+
+ const me=state.players[mySlot];
+ const os=mySlot==="p1"?"p2":"p1";
+ const op=state.players[os];
+ const c=getCard(me.card);
+
  if(!op?.card)return alert("相手がまだカードを場に出していません。");
+
  let damage=c.power;
  if(c.id==="c1")damage+=1;
  if(c.id==="c3")damage+=2;
- if(c.id==="c4"&&state.nextBonus)damage+=2;
+
+ if((me.nextBonus||0)>0){
+   damage+=me.nextBonus;
+ }
+
  const up={};
  up[`players/${os}/hp`]=Math.max(0,op.hp-damage);
- if(c.id==="c2")up[`players/${mySlot}/hp`]=Math.min(20,me.hp+1);
- if(c.id==="c5")up[`players/${os}/energy`]=Math.max(0,op.energy-1);
+
+ if(c.id==="c2")
+   up[`players/${mySlot}/hp`]=Math.min(20,me.hp+1);
+
+ if(c.id==="c5")
+   up[`players/${os}/energy`]=Math.max(0,op.energy-1);
+
  up[`players/${mySlot}/score`]=(me.score||0)+damage;
- if(c.id==="c4")up.nextBonus=true;else up.nextBonus=false;
+
+ if(c.id==="c4")
+   up[`players/${mySlot}/nextBonus`]=2;
+ else
+   up[`players/${mySlot}/nextBonus`]=0;
+
  up.log=addLog(state.log,`${me.name}の${c.name}が${damage}ダメージ！`);
- if(op.hp-damage<=0){up.winner=me.name;up.turn=null}else up.turn=os;
- await update(roomRef,up);
+
+ if(op.hp-damage<=0){
+   up.winner=me.name;
+   up.turn=null;
+ }else{
+   up.turn=os;
+ }
+
+ try{await update(roomRef,up)}
+ catch(e){console.error(e);alert("攻撃を反映できませんでした。Firebaseのルールを確認してください。")}
 }
+
 async function endTurn(){
- const me=state.players[mySlot],os=mySlot==="p1"?"p2":"p1";
- const up={turn:os};up[`players/${mySlot}/energy`]=Math.min(5,(me.energy||0)+2);
+ if(!mySlot)return;
+
+ const me=state.players[mySlot];
+ const os=mySlot==="p1"?"p2":"p1";
+
+ const up={turn:os};
+ up[`players/${mySlot}/energy`]=Math.min(5,(me.energy||0)+2);
  up[`players/${mySlot}/card`]=null;
  up.log=addLog(state.log,`${me.name}がターン終了。カードを手札へ戻しました。`);
- await update(roomRef,up);
+
+ try{await update(roomRef,up)}
+ catch(e){console.error(e);alert("ターン終了を反映できませんでした。Firebaseのルールを確認してください。")}
 }
+
 $("send").onclick=sendChat;
-$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendChat()});
+$("chatInput").addEventListener("keydown",e=>{
+ if(e.key==="Enter")sendChat();
+});
+
 async function sendChat(){
- const input=$("chatInput"),text=input.value.trim();
+ const input=$("chatInput");
+ const text=input.value.trim();
  if(!text)return;
- try{await push(ref(db,"rooms/"+room+"/chat"),{name,text,time:Date.now()});input.value="";input.focus()}
- catch(e){alert("チャットを送信できませんでした。FirebaseのRealtime Database設定を確認してください。");console.error(e)}
+
+ try{
+   await push(ref(db,"rooms/"+room+"/chat"),{
+     name,
+     text,
+     time:Date.now()
+   });
+   input.value="";
+   input.focus();
+ }catch(e){
+   alert("チャットを送信できませんでした。FirebaseのRealtime Database設定を確認してください。");
+   console.error(e);
+ }
 }
+
 $("back").onclick=()=>location.href="index.html";
 
-onValue(roomRef,s=>{state=s.val();render()});
-onValue(ref(db,"rooms/"+room+"/chat"),s=>{
- const arr=[];s.forEach(x=>arr.push(x.val()));arr.sort((a,b)=>a.time-b.time);
- $("messages").innerHTML=arr.slice(-80).map(x=>`<div><b>${esc(x.name)}</b>：${esc(x.text)}</div>`).join("");
- const m=$("messages");m.scrollTop=m.scrollHeight;
+onValue(roomRef,s=>{
+ state=s.val();
+ render();
 });
+
+onValue(ref(db,"rooms/"+room+"/chat"),s=>{
+ const arr=[];
+ s.forEach(x=>arr.push(x.val()));
+ arr.sort((a,b)=>a.time-b.time);
+
+ $("messages").innerHTML=arr.slice(-80)
+   .map(x=>`<div><b>${esc(x.name)}</b>：${esc(x.text)}</div>`)
+   .join("");
+
+ const m=$("messages");
+ m.scrollTop=m.scrollHeight;
+});
+
 const first=await get(roomRef);
-if(!first.exists()){alert("ルームが見つかりません。");location.href="index.html";}
+if(!first.exists()){
+ alert("ルームが見つかりません。");
+ location.href="index.html";
+}
 </script>
 </body>
 </html>
