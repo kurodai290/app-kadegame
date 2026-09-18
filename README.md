@@ -1,84 +1,92 @@
-# CYBER TCG GitHub版（対戦＋観戦）
+# CYBER TCG v2
 
-この版では、元の「ルームIDだけをURLに付ける」方式から、Firebase Realtime Databaseを使う方式に変更しています。
+今回の修正版は「ルームコード」「対戦開始」「観戦」「チャット」を分かりやすくしました。
 
-## 追加したもの
+## まず重要
 
-- 第3者の観戦モード
-- 2人が同じルームでリアルタイムに状態共有
-- 相手の場のカード表示
-- カードを場に出す
-- Energy（コスト）
-- 攻撃
-- HP
-- ターン制
-- スコア
-- 5枚のカードにそれぞれ効果
-- ターン終了
-- チャット
-- GitHub Pagesで公開可能
+GitHub Pagesだけでは、別のスマホ・PC同士のリアルタイム対戦はできません。
+このゲームではFirebase Realtime Databaseを使います。
 
-## 重要：Firebaseの設定
-
-GitHub Pagesだけでは、別のPC・スマホ間で対戦データを保存・共有するサーバー機能がありません。
-そのためFirebase Realtime Databaseを使用します。Firebaseは無料枠がありますが、利用量によって条件が変わるのでFirebase側の最新料金・利用条件を確認してください。
-
-### 1. Firebaseプロジェクトを作る
-
-Firebase Consoleで新しいプロジェクトを作成します。
-
-### 2. Webアプリを追加
-
-プロジェクト設定からWebアプリを追加し、表示されたfirebaseConfigをコピーします。
-
-### 3. Authentication
-
-Authentication → Sign-in method → Anonymous（匿名）を有効にします。
-
-### 4. Realtime Database
-
-Realtime Databaseを作成します。
-
-テスト中は、まずデータベースを作成して動作確認してください。
-公開運用するときは、必ずFirebase AuthenticationとRealtime Databaseのセキュリティルールを設定してください。
-
-### 5. 2つのHTMLのfirebaseConfigを書き換える
-
-`index.html` と `game.html` の中にある
-
-    const firebaseConfig={
-      apiKey:"YOUR_API_KEY",
-      ...
-    };
-
-を自分のFirebaseプロジェクトの値に置き換えます。
-
-### 6. GitHubへアップロード
-
-リポジトリのルートに
+## ファイル
 
 - index.html
 - game.html
 - README.md
 
-を置きます。
+## Firebase設定
 
-GitHub Pagesを有効にすると、
+index.html と game.html の両方にある `firebaseConfig` を、自分のFirebaseプロジェクトの設定に置き換えます。
 
-    https://ユーザー名.github.io/リポジトリ名/
+Firebase Consoleで、
 
-でロビーが開きます。
+1. プロジェクトを作成
+2. Webアプリを追加
+3. 表示されたfirebaseConfigをコピー
+4. Authentication → Sign-in method → Anonymous を有効化
+5. Realtime Databaseを作成
+6. index.html と game.html の `firebaseConfig` に貼り付け
 
-## 使い方
+を行ってください。
 
-1. Aさんが「新しく対戦ルームを作る」
-2. 表示されたROOM-xxxxをBさんに伝える
-3. BさんがルームIDを入力して「対戦に参加する」
-4. Cさん以降は同じルームIDを入力して「観戦する」
-5. A/Bはカードを出して攻撃
-6. 観戦者はゲーム状態とチャットをリアルタイムで見られます
+## 対戦方法
 
-## 注意
+### プレイヤーA
 
-元のコードは、URLにルームIDを付けて画面を移動しているだけで、実際には別端末間でゲーム状態を同期していませんでした。
-今回の版ではFirebaseを介して同期しています。
+「ルームを作る」を押します。
+
+すると、
+
+ROOM CODE: ABC123
+
+のような6文字のコードが表示されます。
+
+このコードをプレイヤーBへ伝えます。
+
+### プレイヤーB
+
+自分の名前を入力して、同じコードを入力します。
+
+「対戦に参加する」を押します。
+
+2人目が入った瞬間に対戦開始です。
+
+### 観戦者
+
+3人目以降は同じコードを入力して「観戦する」を押します。
+
+観戦者は、
+
+- 両プレイヤーのHP
+- Energy
+- スコア
+- 場に出ているカード
+- バトルログ
+- チャット
+
+を見られます。
+
+観戦者はカードを出したり攻撃したりできません。
+
+## チャット
+
+画面下の「チャット」に文章を入力して「送信」を押します。
+Enterキーでも送信できます。
+
+チャットはFirebaseに保存されるため、同じルームにいる人全員に表示されます。
+
+## カード
+
+現在は5種類です。
+
+打打だいず：ATK4、攻撃時追加1ダメージ
+Laur：ATK3、攻撃時に自分のHPを1回復
+TJ.hangneil：ATK6、攻撃時追加2ダメージ
+sasakure.UK：ATK2、次の攻撃を強化
+t+pazolite：ATK5、相手のEnergyを1減らす
+
+## GitHub Pages
+
+この3ファイルをGitHubリポジトリのルートにアップロードしてGitHub Pagesを有効にしてください。
+
+注意：
+`YOUR_API_KEY` などを残したままではFirebaseに接続できません。
