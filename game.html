@@ -1,309 +1,81 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER TCG - プレイング画面</title>
-    <style>
-        :root {
-            --bg-cyber: #0a0a12;
-            --panel-cyber: #121225;
-            --neon-blue: #00f3ff;
-            --neon-pink: #ff007f;
-            --neon-green: #39ff14;
-            --text-main: #ffffff;
-            --text-sub: #8a8ab0;
-        }
-
-        body {
-            font-family: 'Consolas', 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-cyber);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        h1 {
-            font-size: 28px;
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px var(--neon-blue);
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-        }
-
-        .room-info {
-            font-size: 14px;
-            color: var(--neon-pink);
-            margin-bottom: 20px;
-            text-shadow: 0 0 5px var(--neon-pink);
-        }
-
-        .game-board {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .card-area {
-            background: var(--panel-cyber);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            min-height: 220px;
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-
-        .area-label {
-            position: absolute;
-            top: -10px;
-            left: 20px;
-            background: var(--bg-cyber);
-            padding: 0 10px;
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--text-sub);
-            border-left: 3px solid var(--neon-pink);
-        }
-
-        .card {
-            width: 180px;
-            height: 270px;
-            background: linear-gradient(135deg, #151630 0%, #0d0e1a 100%);
-            border: 2px solid #2d2f55;
-            border-radius: 14px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-
-        .card:hover {
-            transform: translateY(-10px) scale(1.03);
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
-        }
-
-        .card-img-wrapper {
-            width: 100%;
-            height: 140px;
-            background: #1b1c3a;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
-        }
-
-        .card-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-
-        .card:hover .card-img {
-            opacity: 1;
-        }
-
-        .card-info {
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            background: rgba(10, 10, 18, 0.6);
-        }
-
-        .card-name {
-            font-size: 15px;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 2px;
-        }
-
-        .card-effect {
-            font-size: 11px;
-            color: var(--text-sub);
-            line-height: 1.4;
-            flex-grow: 1;
-        }
-
-        .card-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(255, 0, 127, 0.8);
-            color: #fff;
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 0 5px var(--neon-pink);
-        }
-
-        .badge-normal {
-            background: rgba(0, 243, 255, 0.8);
-            box-shadow: 0 0 5px var(--neon-blue);
-        }
-
-        .control-panel {
-            margin-top: 15px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .cyber-btn {
-            background: transparent;
-            border: 1px solid var(--neon-pink);
-            color: var(--neon-pink);
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-            text-shadow: 0 0 5px var(--neon-pink);
-        }
-
-        .cyber-btn:hover {
-            background: var(--neon-pink);
-            color: #fff;
-            box-shadow: 0 0 15px var(--neon-pink);
-        }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CYBER TCG - GAME</title>
+<style>
+:root{--bg:#080812;--panel:#121225;--blue:#00f3ff;--pink:#ff007f;--green:#39ff14;--sub:#9090b5}
+*{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:#fff;font-family:Consolas,Arial,sans-serif}
+.wrap{width:min(1250px,100%);margin:auto}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.title{font-size:25px;color:var(--blue);text-shadow:0 0 10px #00f3ff}.room{color:var(--pink);font-size:13px}.status{margin:12px 0;padding:10px;border:1px solid #28315b;border-radius:9px;background:#101020}
+.players{display:grid;grid-template-columns:1fr 1fr;gap:12px}.player{padding:12px;border:1px solid #28315b;border-radius:10px;background:var(--panel)}.bar{height:8px;background:#29293d;border-radius:9px;overflow:hidden}.hp{height:100%;background:var(--green);width:100%;transition:.25s}.field,.hand{margin-top:15px;padding:16px;border:1px solid #28315b;border-radius:12px;background:var(--panel)}.label{color:var(--sub);font-size:12px;margin-bottom:10px}.cards{display:flex;gap:12px;flex-wrap:wrap}.card{width:165px;min-height:215px;padding:10px;border:2px solid #30345b;border-radius:12px;background:linear-gradient(135deg,#171936,#0d0e1a);cursor:pointer}.card:hover{border-color:var(--blue);transform:translateY(-3px)}.card.used{opacity:.35;cursor:not-allowed}.name{font-weight:bold;margin-bottom:8px}.type{font-size:10px;color:var(--pink)}.effect{font-size:11px;color:var(--sub);line-height:1.45;margin:9px 0}.stats{font-size:12px}.card button,.actions button{width:100%;padding:9px;margin-top:7px;background:transparent;border:1px solid var(--blue);color:var(--blue);border-radius:7px;font-weight:bold;cursor:pointer}.opcard{filter:brightness(.55);position:relative}.opcard:after{content:"OPPONENT";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--pink);font-weight:bold;letter-spacing:2px;background:#08081299;border-radius:10px}.log{max-height:170px;overflow:auto;font-size:12px;color:var(--sub);line-height:1.7}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.actions button{width:auto;padding:10px 16px}.spectator{border-color:var(--green);color:var(--green)}.chat{margin-top:15px}.messages{height:140px;overflow:auto;padding:10px;background:#090914;border-radius:8px;font-size:12px}.chatrow{display:flex;gap:8px;margin-top:8px}.chatrow input{flex:1;min-width:0;padding:10px;background:#080812;color:#fff;border:1px solid #33385f;border-radius:7px}.chatrow button{width:auto;margin:0;padding:10px 16px}
+@media(max-width:700px){.players{grid-template-columns:1fr}.card{width:145px}}
+</style>
 </head>
 <body>
+<div class="wrap">
+<div class="top"><div class="title">CYBER TCG</div><div class="room" id="roomText"></div></div>
+<div class="status" id="status">接続中...</div>
+<div class="players">
+ <div class="player"><b id="p1name">PLAYER 1</b><div>HP <span id="p1hpText">20</span></div><div class="bar"><div class="hp" id="p1hp"></div></div><div>Energy: <span id="p1energy">3</span>　Score: <span id="p1score">0</span></div></div>
+ <div class="player"><b id="p2name">PLAYER 2</b><div>HP <span id="p2hpText">20</span></div><div class="bar"><div class="hp" id="p2hp"></div></div><div>Energy: <span id="p2energy">3</span>　Score: <span id="p2score">0</span></div></div>
+</div>
+<div class="field"><div class="label">OPPONENT FIELD</div><div id="oppField" class="cards"></div></div>
+<div class="field"><div class="label">YOUR FIELD</div><div id="myField" class="cards"></div></div>
+<div class="hand"><div class="label">YOUR HAND — カードを出して、攻撃できます</div><div id="hand" class="cards"></div></div>
+<div class="actions" id="actions"></div>
+<div class="field"><div class="label">BATTLE LOG</div><div id="log" class="log"></div></div>
+<div class="field chat"><div class="label">CHAT</div><div id="messages" class="messages"></div><div class="chatrow"><input id="chatInput" maxlength="100" placeholder="メッセージ"><button id="send">送信</button></div></div>
+</div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getDatabase,ref,onValue,update,push,get} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-    <h1>CYBER DECK INTERFACE</h1>
-    <div class="room-info" id="roomDisplay">ROOM: LOADING...</div>
-
-    <div class="game-board">
-        <div class="card-area" id="battleField">
-            <div class="area-label">BATTLE FIELD (バトル場)</div>
-            <div style="color: var(--text-sub); font-size: 14px;">手札のカードをクリックして場に出せます</div>
-        </div>
-
-        <div class="card-area" id="playerHand">
-            <div class="area-label">YOUR HAND (手札)</div>
-        </div>
-    </div>
-
-    <div class="control-panel">
-        <button class="cyber-btn" onclick="resetGame()">フィールドをリセット</button>
-        <button class="cyber-btn" style="border-color: var(--neon-blue); color: var(--neon-blue); text-shadow: 0 0 5px var(--neon-blue);" onclick="window.location.href='index.html'">ロビーに戻る</button>
-    </div>
-
-<script>
-    // URLパラメータの取得
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomName = urlParams.get('room') || 'UNKNOWN';
-    const playerName = urlParams.get('name') || 'トレーナー';
-    document.getElementById('roomDisplay').innerText = `ROOM: ${roomName} | PLAYER: ${playerName}`;
-
-    // カードデータ構造化
-    const cardList = [
-        {
-            id: "c1",
-            name: "打打だいず",
-            effect: "ラウンドに勝利すると次のターン攻撃力2倍",
-            type: "通常",
-            image: "https://via.placeholder.com/180x140/1a1a2e/39ff14?text=DAIZU"
-        },
-        {
-            id: "c2",
-            name: "Laur",
-            effect: "ラウンドに勝利すると魑魅魍魎を召喚",
-            type: "通常",
-            image: "https://via.placeholder.com/180x140/1a1a2e/ff007f?text=Laur"
-        },
-        {
-            id: "c3",
-            name: "TJ.hangneil",
-            effect: "相手から4ポイント奪取できる",
-            type: "特殊召喚",
-            image: "https://via.placeholder.com/180x140/1a1a2e/00f3ff?text=TJ.hangneil"
-        },
-        {
-            id: "c4",
-            name: "sasakure.UK",
-            effect: "3ラウンド連続で勝利すると?????を召喚できる",
-            type: "通常",
-            image: "https://via.placeholder.com/180x140/1a1a2e/e5c583?text=sasakure"
-        },
-        {
-            id: "c5",
-            name: "t+pazolite",
-            effect: "ラウンドに勝利すると相手と自分の点数を逆にできる",
-            type: "通常",
-            image: "https://via.placeholder.com/180x140/1a1a2e/94d2bd?text=t%2Bpazolite"
-        }
-    ];
-
-    function renderHand() {
-        const handContainer = document.getElementById('playerHand');
-        handContainer.innerHTML = '';
-
-        cardList.forEach(card => {
-            const cardEl = document.createElement('div');
-            cardEl.className = 'card';
-            cardEl.onclick = () => playCard(card, cardEl);
-
-            const badgeClass = card.type === "特殊召喚" ? "card-badge" : "card-badge badge-normal";
-
-            cardEl.innerHTML = `
-                <span class="${badgeClass}">${card.type}</span>
-                <div class="card-img-wrapper">
-                    <img src="${card.image}" class="card-img" alt="${card.name}">
-                </div>
-                <div class="card-info">
-                    <div class="card-name">${card.name}</div>
-                    <div class="card-effect">${card.effect}</div>
-                </div>
-            `;
-            handContainer.appendChild(cardEl);
-        });
-    }
-
-    function playCard(card, cardElement) {
-        const field = document.getElementById('battleField');
-        if(field.querySelector('div') && field.querySelector('div').style.color !== '') {
-            field.innerHTML = '';
-        }
-
-        const clonedCard = cardElement.cloneNode(true);
-        clonedCard.onclick = null;
-        field.appendChild(clonedCard);
-
-        cardElement.style.opacity = '0.3';
-        cardElement.style.pointerEvents = 'none';
-    }
-
-    function resetGame() {
-        document.getElementById('battleField').innerHTML = '<div style="color: var(--text-sub); font-size: 14px;">手札のカードをクリックして場に出せます</div>';
-        renderHand();
-    }
-
-    renderHand();
+const firebaseConfig={
+ apiKey:"YOUR_API_KEY",authDomain:"YOUR_PROJECT.firebaseapp.com",
+ databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+ projectId:"YOUR_PROJECT",storageBucket:"YOUR_PROJECT.appspot.com",
+ messagingSenderId:"YOUR_SENDER_ID",appId:"YOUR_APP_ID"
+};
+const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app); await signInAnonymously(auth);
+const q=new URLSearchParams(location.search),room=q.get("room"),myName=q.get("name")||"名無し",mode=q.get("mode")||"player";
+const roomRef=ref(db,"rooms/"+room); document.getElementById("roomText").textContent=`ROOM: ${room}`;
+const cards=[
+{id:"c1",name:"打打だいず",type:"通常",power:4,cost:1,effect:"攻撃成功時、相手HPに追加1ダメージ"},
+{id:"c2",name:"Laur",type:"通常",power:3,cost:1,effect:"攻撃成功時、自分のHPを1回復"},
+{id:"c3",name:"TJ.hangneil",type:"特殊",power:6,cost:3,effect:"攻撃成功時、追加2ダメージ"},
+{id:"c4",name:"sasakure.UK",type:"通常",power:2,cost:1,effect:"攻撃成功時、次の自分の攻撃+2"},
+{id:"c5",name:"t+pazolite",type:"特殊",power:5,cost:2,effect:"攻撃成功時、相手のEnergyを1減らす"}
+];
+let data=null,mySlot=null;
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function cardBy(id){return cards.find(c=>c.id===id)}
+function addLog(arr,msg){return [...(arr||[]),new Date().toLocaleTimeString()+" "+msg].slice(-40)}
+function hp(id){return Math.max(0,Math.min(20,id))}
+function render(){
+ if(!data)return;
+ const p1=data.players?.p1,p2=data.players?.p2;
+ if(mode==="player")mySlot=p1?.name===myName?"p1":(p2?.name===myName?"p2":null);
+ const mine=mySlot?data.players[mySlot]:null,opp=mySlot?(data.players[mySlot==="p1"?"p2":"p1"]):null;
+ document.getElementById("status").textContent=mode==="spectator"?"👁 観戦モード — 操作はできません":(data.phase==="waiting"?"相手の参加を待っています":data.winner?`ゲーム終了: ${data.winner} の勝利`:`${data.turn===mySlot?"あなたのターン":"相手のターン"} / Energy ${mine?.energy??0}`);
+ for(const [slot,p] of [["p1",p1],["p2",p2]]){document.getElementById(slot+"name").textContent=p?.name||"待機中";document.getElementById(slot+"hpText").textContent=p?.hp??0;document.getElementById(slot+"hp").style.width=((p?.hp??0)/20*100)+"%";document.getElementById(slot+"energy").textContent=p?.energy??0;document.getElementById(slot+"score").textContent=p?.score??0}
+ renderField("myField",mine?.card,true);renderField("oppField",opp?.card,false);
+ const hand=document.getElementById("hand");hand.innerHTML="";
+ (data.cards?.[mySlot]||cards.map(c=>c.id)).forEach(id=>{const c=cardBy(id);if(!c)return;const div=document.createElement("div");div.className="card"+(mine?.card?" used":"");div.innerHTML=`<div class="name">${c.name}</div><div class="type">${c.type} / COST ${c.cost}</div><div class="effect">${c.effect}</div><div class="stats">ATK ${c.power}</div><button ${mode==="spectator"||mine?.card||data.turn!==mySlot||data.winner?"disabled":""}>場に出す</button>`;div.querySelector("button").onclick=()=>play(c);hand.appendChild(div)});
+ const acts=document.getElementById("actions");acts.innerHTML="";
+ if(mode==="player"&&mySlot&&data.turn===mySlot&&!data.winner&&mine?.card){const b=document.createElement("button");b.textContent="⚔ 攻撃する";b.onclick=attack;acts.appendChild(b)}
+ if(mode==="player"&&mySlot&&data.turn===mySlot&&!data.winner){const b=document.createElement("button");b.textContent="ターン終了";b.onclick=endTurn;acts.appendChild(b)}
+ const back=document.createElement("button");back.textContent="ロビーへ戻る";back.onclick=()=>location.href="index.html";acts.appendChild(back);
+ document.getElementById("log").innerHTML=(data.log||[]).map(x=>`<div>${esc(x)}</div>`).join("");
+}
+function renderField(id,card,own){const el=document.getElementById(id);el.innerHTML="";if(!card){el.innerHTML='<span style="color:#9090b5">カードなし</span>';return}const c=cardBy(card);if(!c)return;const d=document.createElement("div");d.className="card "+(!own?"opcard":"");d.innerHTML=`<div class="name">${c.name}</div><div class="type">${c.type}</div><div class="effect">${c.effect}</div><div class="stats">ATK ${c.power}</div>`;el.appendChild(d)}
+async function play(c){if(mode!=="player"||!mySlot||data.turn!==mySlot||data.players[mySlot].card)return;const p=data.players[mySlot];if(p.energy<c.cost)return alert("Energyが足りません");const up={};up[`players/${mySlot}/card`]=c.id;up[`players/${mySlot}/energy`]=p.energy-c.cost;up["log"]=addLog(data.log,`${p.name}が${c.name}を場に出しました`);await update(roomRef,up)}
+async function attack(){const me=data.players[mySlot],os=mySlot==="p1"?"p2":"p1",op=data.players[os],c=cardBy(me.card);if(!op||!op.card)return alert("相手がまだカードを出していません");let dmg=c.power,heal=0,extra=0;if(c.id==="c1")extra=1;if(c.id==="c2")heal=1;if(c.id==="c3")extra=2;if(c.id==="c4")extra=data.bonus||0;if(c.id==="c5"){}dmg+=extra;const up={};up[`players/${os}/hp`]=hp(op.hp-dmg);up[`players/${mySlot}/hp`]=hp(me.hp+heal);if(c.id==="c5")up[`players/${os}/energy`]=Math.max(0,op.energy-1);if(c.id==="c4")up.bonus=0;up[`players/${mySlot}/score`]=(me.score||0)+dmg;up["log"]=addLog(data.log,`${me.name}の${c.name}が${dmg}ダメージ！`);if(op.hp-dmg<=0)up.winner=me.name;else up.turn=os;await update(roomRef,up)}
+async function endTurn(){const up={};up.turn=mySlot==="p1"?"p2":"p1";up[`players/${mySlot}/energy`]=Math.min(5,(data.players[mySlot].energy||0)+2);up.log=addLog(data.log,`${data.players[mySlot].name}がターン終了`);await update(roomRef,up)}
+document.getElementById("send").onclick=async()=>{const input=document.getElementById("chatInput"),m=input.value.trim();if(!m)return;await push(ref(db,"rooms/"+room+"/chat"),{name:myName,text:m,time:Date.now()});input.value=""};
+onValue(roomRef,s=>{data=s.val();render()});
+onValue(ref(db,"rooms/"+room+"/chat"),s=>{const a=[];s.forEach(x=>a.push(x.val()));a.sort((a,b)=>a.time-b.time);document.getElementById("messages").innerHTML=a.slice(-60).map(x=>`<div><b>${esc(x.name)}</b>: ${esc(x.text)}</div>`).join("");const e=document.getElementById("messages");e.scrollTop=e.scrollHeight});
+const first=await get(roomRef);if(!first.exists())alert("ルームが見つかりません");
 </script>
-
 </body>
 </html>

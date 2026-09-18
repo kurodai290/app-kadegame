@@ -1,197 +1,82 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCGオンライン - 対戦ロビー</title>
-    <style>
-        :root {
-            --bg-cyber: #0a0a12;
-            --panel-cyber: #121225;
-            --neon-blue: #00f3ff;
-            --neon-pink: #ff007f;
-            --text-main: #ffffff;
-            --text-sub: #8a8ab0;
-        }
-
-        body {
-            font-family: 'Consolas', 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-cyber);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .hub-container {
-            background: var(--panel-cyber);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 0 25px rgba(0, 243, 255, 0.2);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 26px;
-            margin-bottom: 5px;
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px var(--neon-blue);
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            font-size: 13px;
-            color: var(--text-sub);
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: var(--neon-blue);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            background: rgba(10, 10, 18, 0.6);
-            border: 1px solid rgba(0, 243, 255, 0.4);
-            border-radius: 8px;
-            font-size: 16px;
-            color: #fff;
-            box-sizing: border-box;
-            transition: all 0.3s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--neon-pink);
-            box-shadow: 0 0 10px var(--neon-pink);
-            outline: none;
-        }
-
-        .button-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 25px;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background-color: var(--neon-pink);
-            color: white;
-            text-shadow: 0 0 5px #fff;
-            box-shadow: 0 0 10px var(--neon-pink);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            text-shadow: 0 0 5px var(--neon-blue);
-        }
-
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 0 20px var(--neon-pink);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(0, 243, 255, 0.1);
-            box-shadow: 0 0 15px var(--neon-blue);
-        }
-
-        .divider {
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            color: var(--text-sub);
-            font-size: 12px;
-        }
-
-        .divider::before, .divider::after {
-            content: "";
-            flex: 1;
-            background: rgba(138, 138, 176, 0.3);
-            height: 1px;
-            margin: 0 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CYBER TCG - ロビー</title>
+<style>
+:root{--bg:#080812;--panel:#121225;--blue:#00f3ff;--pink:#ff007f;--text:#fff;--sub:#9090b5}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:Consolas,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px}
+.box{width:min(460px,100%);background:var(--panel);border:1px solid #27305c;border-radius:16px;padding:28px;box-shadow:0 0 30px #00f3ff18}
+h1{color:var(--blue);text-align:center;letter-spacing:2px;margin:0 0 6px;text-shadow:0 0 10px #00f3ff}.sub{text-align:center;color:var(--sub);font-size:13px;margin-bottom:25px}
+label{display:block;color:var(--blue);font-size:12px;margin:14px 0 6px}input{width:100%;padding:13px;border-radius:8px;border:1px solid #38406d;background:#080812;color:#fff;font-size:16px}
+button{width:100%;padding:13px;margin-top:12px;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;background:transparent;color:var(--blue);border:1px solid var(--blue)}
+button.primary{background:var(--pink);border-color:var(--pink);color:#fff}.divider{text-align:center;color:var(--sub);margin:20px 0 5px;font-size:12px}
+.note{margin-top:18px;color:var(--sub);font-size:12px;line-height:1.6}
+</style>
 </head>
 <body>
-
-<div class="hub-container">
-    <h1>CYBER TCG LOBBY</h1>
-    <div class="subtitle">ルームを作成するか、ルームIDを入力して入場してください</div>
-
-    <div class="input-group">
-        <label for="playerName">プレイヤー名</label>
-        <input type="text" id="playerName" placeholder="名無しトレーナー" value="プレイヤー1">
-    </div>
-
-    <div class="button-stack">
-        <button class="btn-primary" onclick="createRoom()">新しく対戦ルームを作る</button>
-        
-        <div class="divider">または</div>
-
-        <div class="input-group" style="margin-bottom: 10px;">
-            <label for="roomId">ルームID</label>
-            <input type="text" id="roomId" placeholder="例: ROOM-1234">
-        </div>
-        <button class="btn-secondary" onclick="joinRoom()">指定のルームに入る</button>
-    </div>
+<div class="box">
+<h1>CYBER TCG LOBBY</h1>
+<div class="sub">対戦・観戦に対応したオンラインロビー</div>
+<label for="name">プレイヤー名</label>
+<input id="name" maxlength="20" placeholder="名無しトレーナー" value="プレイヤー1">
+<button class="primary" id="create">新しく対戦ルームを作る</button>
+<div class="divider">または</div>
+<label for="room">ルームID</label>
+<input id="room" maxlength="20" placeholder="例: ROOM-1234">
+<button id="join">対戦に参加する</button>
+<button id="watch">観戦する</button>
+<div class="note">※この版はFirebase Realtime Databaseを使用します。READMEのFirebase設定を最初に行ってください。</div>
 </div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getDatabase,ref,set,get} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import {getAuth,signInAnonymously} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
-<script>
-    function createRoom() {
-        const name = document.getElementById('playerName').value.trim();
-        if(!name) return alert('プレイヤー名を入力してください');
-        const generatedRoomId = 'ROOM-' + Math.floor(1000 + Math.random() * 9000);
-        
-        alert(`${name}さんが部屋を作成しました。\nルームID: ${generatedRoomId}\n対戦画面へ遷移します。`);
-        window.location.href = `game.html?room=${generatedRoomId}&name=${encodeURIComponent(name)}&role=host`;
-    }
+const firebaseConfig={
+  apiKey:"YOUR_API_KEY",
+  authDomain:"YOUR_PROJECT.firebaseapp.com",
+  databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId:"YOUR_PROJECT",
+  storageBucket:"YOUR_PROJECT.appspot.com",
+  messagingSenderId:"YOUR_SENDER_ID",
+  appId:"YOUR_APP_ID"
+};
 
-    function joinRoom() {
-        const name = document.getElementById('playerName').value.trim();
-        const room = document.getElementById('roomId').value.trim();
-        
-        if(!name) return alert('プレイヤー名を入力してください');
-        if(!room) return alert('ルームIDを入力してください');
-        
-        alert(`${name}さんが部屋 ${room} に参加します。`);
-        window.location.href = `game.html?room=${room}&name=${encodeURIComponent(name)}&role=guest`;
-    }
+const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app);
+await signInAnonymously(auth);
+
+const $=id=>document.getElementById(id);
+function name(){return $("name").value.trim().slice(0,20)}
+function room(){return $("room").value.trim().toUpperCase()}
+function go(r,n,mode){location.href=`game.html?room=${encodeURIComponent(r)}&name=${encodeURIComponent(n)}&mode=${mode}`}
+function newRoom(){return "ROOM-"+Math.floor(1000+Math.random()*9000)}
+
+$("create").onclick=async()=>{
+ const n=name(); if(!n)return alert("プレイヤー名を入力してください");
+ let r=newRoom(); let tries=0;
+ while((await get(ref(db,"rooms/"+r))).exists() && tries++<10)r=newRoom();
+ await set(ref(db,"rooms/"+r),{
+   createdAt:Date.now(),turn:"p1",phase:"waiting",winner:null,
+   players:{p1:{name:n,hp:20,energy:3,score:0,card:null},p2:null},
+   cards:{p1:[],p2:[]},log:["ルームを作成しました"]
+ });
+ go(r,n,"player");
+};
+$("join").onclick=async()=>{
+ const n=name(),r=room(); if(!n)return alert("プレイヤー名を入力してください"); if(!r)return alert("ルームIDを入力してください");
+ const s=await get(ref(db,"rooms/"+r)); if(!s.exists())return alert("そのルームは存在しません");
+ const d=s.val(); if(d.players.p2)return alert("このルームはすでに2人対戦中です");
+ await set(ref(db,"rooms/"+r+"/players/p2"),{name:n,hp:20,energy:3,score:0,card:null});
+ await set(ref(db,"rooms/"+r+"/phase"),"battle");
+ go(r,n,"player");
+};
+$("watch").onclick=async()=>{
+ const r=room(); if(!r)return alert("ルームIDを入力してください");
+ const s=await get(ref(db,"rooms/"+r)); if(!s.exists())return alert("そのルームは存在しません");
+ go(r,name()||"観戦者","spectator");
+};
 </script>
-
 </body>
 </html>
